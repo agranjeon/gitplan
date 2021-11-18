@@ -114,6 +114,9 @@ func GenerateAuth(privateKeyFile string, password string) (*gitssh.PublicKeys, e
 	var signer ssh.Signer
 	var err error = nil
 	sshKey, err := ioutil.ReadFile(privateKeyFile)
+	if err != nil {
+		return nil, err
+	}
 	if len(password) == 0 {
 		signer, err = ssh.ParsePrivateKey([]byte(sshKey))
 	} else {

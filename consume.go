@@ -23,7 +23,6 @@ var auth *gitssh.PublicKeys
 func Consume() {
 	if _, err := os.Stat(".gitplan/commits"); os.IsNotExist(err) {
 		color.Error.Println("Can't consume because there has never been any commit using gitplan")
-
 		return
 	}
 	lockConsumer()
@@ -31,9 +30,13 @@ func Consume() {
 	r, err := git.PlainOpen(".gitplan/repo")
 	if err != nil {
 		color.Error.Println("Can't consume")
-		panic(err)
+		return
 	}
 	config, err := ioutil.ReadFile(".gitplan/config")
+	if err != nil {
+		color.Error.Println("Can't read config file")
+		return
+	}
 	configContent := string(config)
 	c := strings.Split(configContent, "\n")
 	keyFile := ""
@@ -157,7 +160,7 @@ func processFile(repository *git.Repository, filename string) {
 	}
 
 	Notify(fmt.Sprintf("%v is pushed!", branchName), true)
-	headRef, err := repository.Head()
+	headRef, _ := repository.Head()
 	// Remove the branch after the commit has been processed
 	// It will allow us to recreate a branch from remote in case there is an other commit with the same branch Name
 	// If we don't do that, we're heading to big troubles, and we don't want to be in big trouble
