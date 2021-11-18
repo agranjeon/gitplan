@@ -75,7 +75,7 @@ func Notify(message string, status bool) {
 // Format the date param from CLI which is formatted "+{value}{unit}" (for example +2hours)
 // to have an UNIX timestamp
 func formatDate(date string) string {
-	reg, _ := regexp.Compile("[+]([0-9])(hours|hour|minutes|minute)")
+	reg, _ := regexp.Compile("[+]([0-9]+)(hours|hour|minutes|minute)")
 	match := reg.FindAllSubmatch([]byte(date), 2)
 
 	amount, _ := strconv.ParseInt(string(match[0][1]), 10, 64)

@@ -113,7 +113,9 @@ func checkOrCreateGitplanWorkdir(r *git.Repository) (*git.Repository, error) {
 	if _, err := os.Stat(".gitplan/repo"); !os.IsNotExist(err) {
 		newR, err := git.PlainOpen(".gitplan/repo")
 
-		return newR, err
+		if err == nil {
+			return newR, nil
+		}
 	}
 	color.Comment.Println("Initializing .gitplan/repo folder with a copy of the repository")
 	remote, _ := r.Remote("origin")
