@@ -62,9 +62,24 @@ func getParam(name string) string {
 // Send a desktop notification
 // If status is false, it means the notification tells an error
 func Notify(message string, status bool) {
-	image := "assets/YEP.png"
+	if _, err := os.Stat(".gitplan/assets"); os.IsNotExist(err) {
+		os.MkdirAll(".gitplan/assets", 0755)
+	}
+	if _, err := os.Stat(".gitplan/assets/YEP.png"); os.IsNotExist(err) {
+		file, err := Asset("assets/YEP.png")
+		if err == nil {
+			os.WriteFile(".gitplan/assets/YEP.png", file, 0755)
+		}
+	}
+	if _, err := os.Stat(".gitplan/assets/NOP.png"); os.IsNotExist(err) {
+		file, err := Asset("assets/NOP.png")
+		if err == nil {
+			os.WriteFile(".gitplan/assets/NOP.png", file, 0755)
+		}
+	}
+	image := ".gitplan/assets/YEP.png"
 	if !status {
-		image = "assets/NOP.png"
+		image = ".gitplan/assets/NOP.png"
 	}
 	err := beeep.Notify("Gitplan", message, image)
 	if err != nil {
