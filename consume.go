@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
 	gitssh "github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/gookit/color"
 )
@@ -128,7 +127,8 @@ func processFile(repository *git.Repository, filename string) {
 	fileContent := string(content)
 	s := strings.Split(fileContent, "\n")
 	branchName, message := s[1], s[2]
-	worktree, err := checkoutBranch(repository, branchName)
+	err = checkoutBranch(branchName)
+	worktree, _ := repository.Worktree()
 	if err != nil && err.Error() != "worktree contains unstaged changes" {
 		Notify(fmt.Sprintf("Something went wrong switching local branch: %v", err.Error()), false)
 		return
@@ -153,7 +153,12 @@ func processFile(repository *git.Repository, filename string) {
 		return
 	}
 
-	err = repository.Push(&git.PushOptions{Auth: auth})
+	// pushing with go-git seems boring and is not equal to "git push"
+	// I'm done wasting time looking for information about go-git
+	os.Chdir(".gitplan/repo")
+	defer os.Chdir("../..")
+	cmd = exec.Command("git", "push")
+	_, err = cmd.Output()
 	if err != nil {
 		Notify(fmt.Sprintf("Something went wrong pushing your changes: %v", err.Error()), false)
 		return
@@ -169,42 +174,20 @@ func processFile(repository *git.Repository, filename string) {
 
 // Checkout the .gitplan/repo to branchname
 // Fetch remote, checkout remote branch, create a new local branch
-func checkoutBranch(r *git.Repository, branchName string) (*git.Worktree, error) {
-	err := r.Fetch(&git.FetchOptions{Auth: auth})
-	if err != nil && err.Error() != "already up-to-date" {
-		//If we're already up to date, it's perfect
+func checkoutBranch(branchName string) error {
+	// Use exec to checkout branch, as when doing it using gitplan, it does weird things, without linking local branch to remote branch
+	os.Chdir(".gitplan/repo")
+	defer os.Chdir("../..")
+	cmd := exec.Command("git", "fetch")
+	_, err := cmd.Output()
+	if err != nil {
 		color.Error.Println(err.Error())
-		return nil, err
+		return err
 	}
-	w, _ := r.Worktree()
-	refs, _ := r.References()
-	expectedReferenceName := plumbing.NewBranchReferenceName(branchName)
-	refExists := false
-	refs.ForEach(func(p *plumbing.Reference) error {
-		if p.Name() == expectedReferenceName {
-			refExists = true
-		}
-		return nil
-	})
-	// Check if branch already exists
-	if !refExists {
-		// Checkout to remote branch's commit
-		err := w.Checkout(&git.CheckoutOptions{
-			Branch: plumbing.NewRemoteReferenceName("origin", branchName),
-		})
-		if err != nil && err.Error() == "reference not found" {
-			color.Error.Println(err.Error())
-			return nil, err
-		}
-	}
+	cmd = exec.Command("git", "checkout", branchName)
+	_, err = cmd.Output()
 
-	// Create a local branch from the commit we checked out or the ref that exists
-	err = w.Checkout(&git.CheckoutOptions{
-		Branch: expectedReferenceName,
-		Create: !refExists,
-	})
-
-	return w, err
+	return err
 }
 
 func deleteFiles(filename string) {

@@ -1,6 +1,8 @@
 package main
 
-import "github.com/gookit/color"
+import (
+	"github.com/gookit/color"
+)
 
 func main() {
 	command := getCommand()
