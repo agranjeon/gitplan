@@ -13,7 +13,12 @@ or build from source
 go install
 ```
 
+### Requirements
+- `git` must be installed globally
+
 ### Usage
+
+Before committing, your branch must exist on remote (for now, we can't know from which branch your local branch was created)
 
 * `commit`
 This command creates a .diff file of the staged changes in `.gitplan/commits` and a .info file containing the date, branch and commit message. It also commits to the branch you're actually on, so you can keep working or doing other stuff without worrying about your changes.
