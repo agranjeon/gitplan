@@ -163,6 +163,7 @@ func processFile(repository *git.Repository, filename string) {
 		Notify(fmt.Sprintf("Something went wrong pushing your changes: %v", err.Error()), false)
 		return
 	}
+	//useless modif
 
 	Notify(fmt.Sprintf("%v is pushed!", branchName), true)
 	headRef, _ := repository.Head()
