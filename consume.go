@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	gitssh "github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/gookit/color"
@@ -124,7 +125,7 @@ func processFile(repository *git.Repository, filename string) {
 	if err != nil {
 		return
 	}
-	defer deleteFiles(filename)
+	//defer deleteFiles(filename)
 	fileContent := string(content)
 	s := strings.Split(fileContent, "\n")
 	branchName, message := s[1], s[2]
@@ -153,7 +154,11 @@ func processFile(repository *git.Repository, filename string) {
 		return
 	}
 
-	err = repository.Push(&git.PushOptions{Auth: auth})
+	color.Info.Println("debug")
+	var refSpecs []config.RefSpec
+	refSpecs = append(refSpecs, config.RefSpec("+refs/heads/"+branchName+":refs/remotes/origin/"+branchName))
+
+	err = repository.Push(&git.PushOptions{Auth: auth, RefSpecs: refSpecs})
 	if err != nil {
 		Notify(fmt.Sprintf("Something went wrong pushing your changes: %v", err.Error()), false)
 		return
