@@ -157,8 +157,8 @@ func processFile(repository *git.Repository, filename string) {
 	// I'm done wasting time looking for information about go-git
 	os.Chdir(".gitplan/repo")
 
-	//cmd = exec.Command("git", "push")
-	//_, err = cmd.Output()
+	cmd = exec.Command("git", "push")
+	_, err = cmd.Output()
 	os.Chdir("../..")
 	if err != nil {
 		Notify(fmt.Sprintf("Something went wrong pushing your changes: %v", err.Error()), false)
