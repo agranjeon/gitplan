@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -38,7 +39,11 @@ func Status() {
 }
 
 func humanDate(date string) string {
-	humanDate, _ := time.Parse(time.Stamp, date)
+	i, err := strconv.ParseInt(date, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	humanDate := time.Unix(i, 0)
 
 	return humanDate.Format("2006-01-02 15:04")
 }

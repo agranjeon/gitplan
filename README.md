@@ -41,3 +41,18 @@ gitplan consume
 ```
 
 When a commit is pushed, you receive a notification
+
+
+* `status`
+
+Will return you a table of the commits that are yet to be pushed
+
+```
+$ gitplan status
++------------------+--------+------------------------+
+| DATE             | BRANCH | MESSAGE                |
++------------------+--------+------------------------+
+| 2021-11-23 13:38 | master | Add status command     |
+| 2021-11-23 13:53 | master | Forgot to add the file |
++------------------+--------+------------------------+
+```
