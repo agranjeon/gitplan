@@ -6,7 +6,7 @@ Somehow make it so you can plan your commit, to make your coworkers think you ar
 
 Either grab the latest release:
 
-[Linux](https://github.com/agranjeon/gitplan/releases/download/0.0.3/gitplan)
+[Linux](https://github.com/agranjeon/gitplan/releases/download/0.1.0/gitplan)
 
 or build from source
 ```go
